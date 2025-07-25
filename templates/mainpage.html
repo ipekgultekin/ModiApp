@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModiApp - Ana Sayfa</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 16px;
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        .product-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Stagger animasyonları için her kartın kendi index'i olacak */
+        /* .stagger-1 { animation-delay: 0.1s; } vb. dinamik olarak JS ile eklenecek */
+        
+        .heart-btn {
+            transition: all 0.3s ease;
+        }
+        .heart-btn:hover {
+            transform: scale(1.2);
+            color: #ef4444;
+        }
+        .heart-btn.liked {
+            color: #ef4444;
+            animation: heartPulse 0.6s ease-in-out;
+        }
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        /* Yeni: Görseller için boşluk */
+        .product-image-placeholder {
+            min-height: 200px; /* Görsel yüklenirken yer tutucu için */
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            font-size: 0.8em; /* Metin boyutunu küçült */
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="gradient-bg shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-magic text-2xl text-white mr-3"></i>
+                    <span class="text-xl font-bold text-white">ModiApp</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-white">Merhaba, {{ user.username }}!</span>
+                    <div class="relative">
+                        <button class="text-white hover:text-gray-200 transition-colors duration-200 mr-4">
+                            <i class="fas fa-user-circle text-2xl"></i>
+                        </button>
+                    </div>
+                    <button onclick="logout()" class="bg-red-500/80 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2 backdrop-blur-sm">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Çıkış Yap</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="gradient-bg py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="glass-effect p-8 mx-auto max-w-4xl fade-in">
+                <h1 class="text-4xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-sparkles mr-3 text-yellow-500"></i>
+                    {{ user_style.title() }} Stilinize Özel Öneriler
+                </h1>
+                <p class="text-xl text-gray-600 mb-8">
+                    Kişisel tercihlerin doğrultusunda özenle seçilmiş 9 muhteşem kıyafet önerisi
+                </p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <span class="px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                        <i class="fas fa-heart mr-1"></i>
+                        Size Özel
+                    </span>
+                    <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                        <i class="fas fa-star mr-1"></i>
+                        Trend
+                    </span>
+                    <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                        <i class="fas fa-leaf mr-1"></i>
+                        Kaliteli
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div id="chat-container" class="glass-effect p-6 rounded-xl max-w-2xl mx-auto mt-10">
+            <h2 class="text-2xl font-bold mb-4">🧠 ModiApp AI</h2>
+            <div id="chat-box" class="h-64 overflow-y-auto bg-white p-4 mb-4 rounded shadow-inner text-sm">
+                </div>
+            <form id="chat-form">
+                <input type="text" id="user-input" class="w-full p-2 border rounded mb-2" placeholder="Bir şeyler yazın..." />
+                <button type="submit" class="w-full bg-pink-500 text-white py-2 rounded">Gönder</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="ai-product-suggestions" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        </div>
+
+    <div class="bg-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Neden ModiApp?</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center glass-effect p-8 rounded-xl">
+                    <div class="mb-4">
+                        <i class="fas fa-robot text-4xl text-blue-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">AI Destekli Öneriler</h3>
+                    <p class="text-gray-600">Yapay zeka teknolojisi ile size en uygun kıyafetleri buluyoruz.</p>
+                </div>
+                <div class="text-center glass-effect p-8 rounded-xl">
+                    <div class="mb-4">
+                        <i class="fas fa-heart text-4xl text-red-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Kişisel Tercihler</h3>
+                    <p class="text-gray-600">Stiliniz, marka tercihleriniz ve renk seçimlerinizi dikkate alıyoruz.</p>
+                </div>
+                <div class="text-center glass-effect p-8 rounded-xl">
+                    <div class="mb-4">
+                        <i class="fas fa-sync text-4xl text-green-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Sürekli Güncelleme</h3>
+                    <p class="text-gray-600">Moda trendlerini takip ederek önerilerimizi sürekli yeniliyoruz.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="gradient-bg text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-magic text-2xl mr-3"></i>
+                        <span class="text-xl font-bold">ModiApp</span>
+                    </div>
+                    <p class="text-white/80">Kişisel stil asistanınız. Moda dünyasında yolunuzu bulmanıza yardımcı oluyoruz.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Hızlı Linkler</h4>
+                    <ul class="space-y-2 text-white/80">
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">Ana Sayfa</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">Stil Testi</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">Öneriler</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Destek</h4>
+                    <ul class="space-y-2 text-white/80">
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">SSS</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">İletişim</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">Yardım</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Sosyal Medya</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white/80 hover:text-white transition-colors duration-200">
+                            <i class="fab fa-instagram text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-white/80 hover:text-white transition-colors duration-200">
+                            <i class="fab fa-twitter text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-white/80 hover:text-white transition-colors duration-200">
+                            <i class="fab fa-facebook text-2xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function logout() {
+            fetch('/logout', {
+                method: 'POST'
+            }).then(() => {
+                window.location.href = '/dashboard'; 
+            });
+        }
+    </script>
+
+    <script>
+        document.getElementById("chat-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const input = document.getElementById("user-input");
+            const chatBox = document.getElementById("chat-box");
+            const aiProductSuggestionsContainer = document.getElementById("ai-product-suggestions");
+        
+            const userMessage = input.value.trim();
+            if (!userMessage) return;
+        
+            // Kullanıcının mesajını chat box'a ekle
+            chatBox.innerHTML += `<div class="text-right mb-2"><strong>Sen:</strong> ${userMessage}</div>`;
+            input.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
+        
+            // Yükleniyor mesajı göster
+            chatBox.innerHTML += `<div class="text-left mb-2 text-gray-500" id="loading-message"><strong>ModiApp:</strong> Öneriler yükleniyor...</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+            try {
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: userMessage })
+                });
+            
+                const result = await response.json();
+                
+                // Yükleniyor mesajını kaldır
+                const loadingMessage = document.getElementById("loading-message");
+                if (loadingMessage) loadingMessage.remove();
+
+                // AI'dan gelen genel yanıtı chatBox'a ekle (eğer bir genel mesaj varsa)
+                if (result.response && result.response !== "OK") { // "OK" değilse bir hata veya bilgilendirme mesajıdır
+                    chatBox.innerHTML += `<div class="text-left mb-2 text-red-600"><strong>ModiApp:</strong> ${result.response}</div>`;
+                }
+                
+                // Ürün önerilerini göster
+                if (result.products && result.products.length > 0) {
+                    chatBox.innerHTML += `<div class="text-left mb-2"><strong>ModiApp:</strong> İşte sizin için özel önerilerim:</div>`;
+                    
+                    // Önceki önerileri temizle
+                    aiProductSuggestionsContainer.innerHTML = ''; 
+
+                    result.products.forEach((product, index) => {
+                        // AI'dan sadece title, brand ve link geldiği için product card HTML'ini buna göre uyarlıyoruz.
+                        // price, image, description gibi alanlar olmadığı için placeholder veya default değerler kullanıyoruz.
+                        const productCardHtml = `
+                            <div class="product-card glass-effect rounded-xl overflow-hidden fade-in" style="animation-delay: ${index * 0.1}s;">
+                                <div class="relative h-64 overflow-hidden bg-gray-200 flex items-center justify-center">
+                                    <div class="product-image-placeholder text-lg text-gray-400">Görsel Yok <br/> (AI henüz görsel oluşturmuyor)</div>
+                                    <div class="absolute top-4 right-4">
+                                        <button class="heart-btn bg-white rounded-full p-2 shadow-lg" onclick="toggleHeart(this)">
+                                            <i class="far fa-heart text-gray-600"></i>
+                                        </button>
+                                    </div>
+                                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4">
+                                        <span class="inline-block bg-white/90 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
+                                            ${product.brand || 'Bilinmiyor'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">${product.title || 'Ürün Adı Yok'}</h3>
+                                    <p class="text-gray-600 text-sm mb-4">Bu, AI tarafından sizin için özel olarak seçilmiş bir üründür. Lütfen bağlantıyı kontrol edin.</p>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-2xl font-bold text-purple-600">Fiyat Yok</span>
+                                        <div class="flex space-x-2">
+                                            <a href="${product.link || '#'}" target="_blank" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 flex items-center">
+                                                <i class="fas fa-external-link-alt mr-1"></i>
+                                                Ürüne Git
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        aiProductSuggestionsContainer.innerHTML += productCardHtml;
+                    });
+                    // Kaydırma animasyonunu sağlamak için
+                    window.scrollTo({
+                        top: aiProductSuggestionsContainer.offsetTop - 100, 
+                        behavior: 'smooth'
+                    });
+
+                } else if (result.response === "OK" && result.products.length === 0) {
+                     // AI'dan başarılı yanıt geldi ama ürün listesi boşsa
+                    chatBox.innerHTML += `<div class="text-left mb-2"><strong>ModiApp:</strong> Üzgünüm, isteğinize uygun bir öneri bulamadım. Lütfen farklı bir şey deneyin.</div>`;
+                }
+                
+                chatBox.scrollTop = chatBox.scrollHeight;
+        
+            } catch (error) {
+                const loadingMessage = document.getElementById("loading-message");
+                if (loadingMessage) loadingMessage.remove();
+                chatBox.innerHTML += `<div class="text-left mb-2 text-red-600"><strong>ModiApp:</strong> Bir hata oluştu: ${error.message}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+                console.error("Fetch error:", error);
+            }
+        });
+
+        function toggleHeart(button) {
+            button.classList.toggle('liked');
+            const icon = button.querySelector('i');
+            if (button.classList.contains('liked')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            }
+        }
+    </script>
+</body>
+</html>

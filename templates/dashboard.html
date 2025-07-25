@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StyleMate - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 16px;
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-in-left {
+            animation: slideInLeft 1s ease-out;
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .slide-in-right {
+            animation: slideInRight 1s ease-out 0.3s both;
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.4); }
+            50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.8); }
+        }
+        .btn-hover {
+            transition: all 0.3s ease;
+        }
+        .btn-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        .sparkle {
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white/10 backdrop-blur-md shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center slide-in-left">
+                    <i class="fas fa-magic text-2xl text-white mr-3 sparkle"></i>
+                    <span class="text-xl font-bold text-white">Modi App</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto text-center">
+            <!-- Fashion Icon -->
+            <div class="mb-8 fade-in">
+                <div class="inline-block p-6 rounded-full bg-white/10 backdrop-blur-md floating">
+                    <i class="fas fa-tshirt text-6xl text-white"></i>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="glass-effect p-8 md:p-12 mx-auto fade-in">
+                <h1 class="text-5xl md:text-6xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-sparkles mr-3 text-yellow-500 sparkle"></i>
+                    StyleMate'e Hoş Geldin
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-600 mb-8">
+                    Akıllı moda asistanın hazır
+                </p>
+                
+                <!-- CTA Button -->
+                <div class="mb-8">
+                    <a href="/login" class="btn-hover bg-gradient-to-r from-purple-500 to-pink-500 text-white px-12 py-4 rounded-xl text-xl font-semibold pulse-glow inline-block">
+                        <i class="fas fa-rocket mr-3"></i>
+                        Başla
+                    </a>
+                </div>
+
+                <!-- Register Link -->
+                <p class="text-gray-600">
+                    Hesabın yok mu? 
+                    <a href="/register" class="text-gradient font-semibold hover:underline transition-all duration-200">
+                        Hemen kayıt ol!
+                    </a>                    
+                </p>
+            </div>
+
+            <!-- Features Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 fade-in">
+                <div class="feature-card glass-effect p-6 rounded-xl">
+                    <div class="mb-4">
+                        <i class="fas fa-brain text-3xl text-blue-400"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">AI Destekli</h3>
+                    <p class="text-gray-600 text-sm">Yapay zeka ile kişisel stil önerileri</p>
+                </div>
+                
+                <div class="feature-card glass-effect p-6 rounded-xl">
+                    <div class="mb-4">
+                        <i class="fas fa-palette text-3xl text-purple-400"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Trend Takibi</h3>
+                    <p class="text-gray-600 text-sm">En güncel moda trendleri</p>
+                </div>
+                
+                <div class="feature-card glass-effect p-6 rounded-xl">
+                    <div class="mb-4">
+                        <i class="fas fa-heart text-3xl text-red-400"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Kişisel</h3>
+                    <p class="text-gray-600 text-sm">Size özel stil analizi</p>
+                </div>
+            </div>
+
+            <!-- Fashion Icons Decoration -->
+            <div class="hidden md:block absolute top-20 left-10 text-white/20">
+                <i class="fas fa-hat-wizard text-4xl floating"></i>
+            </div>
+            <div class="hidden md:block absolute top-40 right-20 text-white/20">
+                <i class="fas fa-glasses text-3xl floating" style="animation-delay: 1s;"></i>
+            </div>
+            <div class="hidden md:block absolute bottom-32 left-20 text-white/20">
+                <i class="fas fa-shoe-prints text-3xl floating" style="animation-delay: 2s;"></i>
+            </div>
+            <div class="hidden md:block absolute bottom-20 right-10 text-white/20">
+                <i class="fas fa-gem text-4xl floating" style="animation-delay: 0.5s;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-black/20 backdrop-blur-md text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <i class="fas fa-magic text-2xl mr-3"></i>
+                    <span class="text-xl font-bold">StyleMate</span>
+                </div>
+                <p class="text-white/80 text-center md:text-right">
+                    © 2025 StyleMate. Tüm hakları saklıdır.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Elements Script -->
+    <script>
+        // Add click effects to buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('button, .btn-hover');
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Create ripple effect
+                    const ripple = document.createElement('div');
+                    ripple.style.position = 'absolute';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+                    ripple.style.transform = 'scale(0)';
+                    ripple.style.animation = 'ripple 0.6s linear';
+                    ripple.style.left = (e.clientX - e.target.offsetLeft) + 'px';
+                    ripple.style.top = (e.clientY - e.target.offsetTop) + 'px';
+                    ripple.style.width = '20px';
+                    ripple.style.height = '20px';
+                    
+                    this.style.position = 'relative';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

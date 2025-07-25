@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StyleMate - Stil Testi</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 16px;
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        .style-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .style-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .style-card.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen p-4">
+    <!-- Floating Icons -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <i class="fas fa-palette text-white opacity-10 text-8xl absolute top-10 left-10 floating"></i>
+        <i class="fas fa-magic text-white opacity-10 text-6xl absolute top-32 right-20 floating" style="animation-delay: -1s;"></i>
+        <i class="fas fa-crown text-white opacity-10 text-7xl absolute bottom-20 left-32 floating" style="animation-delay: -2s;"></i>
+    </div>
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-10 slide-in">
+            <div class="mb-6">
+                <i class="fas fa-sparkles text-6xl text-white"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-white mb-4">Stil Testiniz</h1>
+            <p class="text-xl text-white/90">Size en uygun kıyafet önerilerini alabilmek için birkaç sorumuzu cevaplayın</p>
+        </div>
+
+        <!-- Test Form -->
+        <div class="glass-effect p-8 slide-in" style="animation-delay: 0.2s;">
+            <form method="post" action="/style-test" id="styleForm">
+                <!-- Stil Seçimi -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-6 text-gray-800 flex items-center">
+                        <i class="fas fa-heart mr-3 text-pink-500"></i>
+                        Hangi stil size daha yakın?
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="style-card glass-effect p-6 rounded-xl" onclick="selectStyle('casual')">
+                            <input type="radio" name="style" value="casual" class="hidden" id="casual">
+                            <div class="text-center">
+                                <i class="fas fa-tshirt text-4xl mb-4 text-blue-500"></i>
+                                <h4 class="text-xl font-semibold mb-2">Casual</h4>
+                                <p class="text-gray-600">Rahat, günlük ve konforlu kıyafetler</p>
+                            </div>
+                        </div>
+                        <div class="style-card glass-effect p-6 rounded-xl" onclick="selectStyle('formal')">
+                            <input type="radio" name="style" value="formal" class="hidden" id="formal">
+                            <div class="text-center">
+                                <i class="fas fa-user-tie text-4xl mb-4 text-gray-700"></i>
+                                <h4 class="text-xl font-semibold mb-2">Formal</h4>
+                                <p class="text-gray-600">Şık, klasik ve profesyonel görünüm</p>
+                            </div>
+                        </div>
+                        <div class="style-card glass-effect p-6 rounded-xl" onclick="selectStyle('trendy')">
+                            <input type="radio" name="style" value="trendy" class="hidden" id="trendy">
+                            <div class="text-center">
+                                <i class="fas fa-fire text-4xl mb-4 text-red-500"></i>
+                                <h4 class="text-xl font-semibold mb-2">Trendy</h4>
+                                <p class="text-gray-600">Moda odaklı, güncel ve cesur</p>
+                            </div>
+                        </div>
+                        <div class="style-card glass-effect p-6 rounded-xl" onclick="selectStyle('boho')">
+                            <input type="radio" name="style" value="boho" class="hidden" id="boho">
+                            <div class="text-center">
+                                <i class="fas fa-leaf text-4xl mb-4 text-green-500"></i>
+                                <h4 class="text-xl font-semibold mb-2">Boho</h4>
+                                <p class="text-gray-600">Doğal, özgür ve artistik</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marka Tercihleri -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-800 flex items-center">
+                        <i class="fas fa-tags mr-3 text-purple-500"></i>
+                        Sevdiğiniz markalar
+                    </h3>
+                    <div class="relative">
+                        <i class="fas fa-store absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input 
+                            type="text" 
+                            name="brands" 
+                            placeholder="Örn: Zara, H&M, Nike, Adidas..." 
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white/80"
+                        >
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Virgülle ayırarak yazabilirsiniz</p>
+                </div>
+
+                <!-- Renk Tercihleri -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-800 flex items-center">
+                        <i class="fas fa-palette mr-3 text-indigo-500"></i>
+                        Kaçınmak istediğiniz renkler
+                    </h3>
+                    <div class="relative">
+                        <i class="fas fa-eye-slash absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input 
+                            type="text" 
+                            name="avoid_colors" 
+                            placeholder="Örn: Neon renkler, çok parlak tonlar..." 
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/80"
+                        >
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Hiç sevmediğiniz renkleri yazabilirsiniz</p>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center">
+                    <button 
+                        type="submit"
+                        id="submitBtn"
+                        disabled
+                        class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    >
+                        <i class="fas fa-magic mr-2"></i>
+                        Kişisel Önerilerimi Göster
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let selectedStyle = null;
+
+        function selectStyle(style) {
+            // Remove previous selection
+            document.querySelectorAll('.style-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to clicked card
+            event.currentTarget.classList.add('selected');
+            
+            // Update radio button
+            document.getElementById(style).checked = true;
+            selectedStyle = style;
+            
+            // Enable submit button
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        // Form validation
+        document.getElementById('styleForm').addEventListener('submit', function(e) {
+            if (!selectedStyle) {
+                e.preventDefault();
+                alert('Lütfen bir stil seçin!');
+            }
+        });
+    </script>
+</body>
+</html>
