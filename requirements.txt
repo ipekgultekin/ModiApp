@@ -6,3 +6,12 @@ google-generativeai
 sqlalchemy
 passlib[bcrypt]
 python-jose[cryptography]
+pydantic[email]
+passlib
+python-jose[cryptography]
+python-multipart
+Jinja2
+bcrypt
+beautifulsoup4
+player
+
