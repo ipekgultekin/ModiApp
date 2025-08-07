@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.db
+*.log
+*.pyc
+
+# Ortam dosyası
+.env
+
+# Virtual environment
+venv/
+env/
+
+# FAISS ve embed cache
+*.faiss
+*.npy
+
+# VSCode veya diğer editör dosyaları
+.vscode/
+.idea/
+
+# Çıktılar
+*.DS_Store
+*.bak
+*.swp
+

@@ -3,8 +3,12 @@ import os
 from dotenv import load_dotenv
 import logging
 from google.api_core import exceptions as api_exceptions
-import requests
+from features.web_search_tool import get_fallback_search_link
+from agents.fallback_agent import fallback_agent
+import re
 
+# FAISS ürün arama modülü
+from features.search_products import search_similar_products
 
 # Logging ayarları
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -17,7 +21,6 @@ if not API_KEY:
     logging.error("GOOGLE_API_KEY bulunamadı. Lütfen .env dosyanızı kontrol edin.")
     raise ValueError("API anahtarı eksik. Uygulama başlatılamaz.")
 
-# Model adı (AI Studio ile uyumlu)
 TARGET_MODEL = "models/gemini-1.5-flash-latest"
 
 try:
@@ -30,85 +33,76 @@ try:
     if TARGET_MODEL not in available_models:
         logging.error(f"Model '{TARGET_MODEL}' desteklenmiyor. Mevcut modeller: {available_models}")
         raise Exception(f"AI modeli bulunamadı: {TARGET_MODEL}")
-    
+
     logging.info(f"Kullanılacak model: {TARGET_MODEL}")
 
 except Exception as e:
     logging.error(f"Model yapılandırma hatası: {e}")
     raise Exception(f"AI servisleri başlatılamıyor: {e}")
 
-# Chat handler
 def handle_chat(message: str, style: str = "casual", favorite_brands: str = "Zara, Bershka") -> str:
     try:
-        model = genai.GenerativeModel(TARGET_MODEL)
-        chat = model.start_chat(history=[])
+        response = fallback_agent(message)
 
-        full_prompt = (
-            f"Sen bir kişisel moda asistanısın. Kullanıcının mesajında belirttiği **sadece o kıyafet türü için** "
-            f"ürün öner. Yalnızca ürün adı ve marka ver. Açıklama, fiyat veya link verme.\n\n"
-            f"Stil: {style}\n"
-            f"Favori markalar: {favorite_brands}\n"
-            f"Kullanıcı mesajı: {message}\n\n"
-            f"Yanıt formatı:\n"
-            f"Kırmızı Ceket - Marka: Zara\n"
-            f"Mavi Pantolon - Marka: Bershka"
-        )
+        if response["type"] == "vector_result":
+            similar_products = response["data"]
 
-        logging.info(f"Oluşturulan prompt: {full_prompt}")
-        response = chat.send_message(full_prompt)
-        raw_lines = response.text.strip().split("\n")
+            product_text = "\n".join([
+                f"- {p['title']} ({p['brand']}) – {p['price']}: {p['description']}"
+                for p in similar_products
+            ])
 
-        enriched_response = []
-        for line in raw_lines:
-            if not line.strip():
-                continue
-            try:
-                product_part, brand_part = line.split(" - Marka:")
-                product = product_part.strip()
-                brand = brand_part.strip()
-                link = generate_brand_search_link(product, brand)
+            model = genai.GenerativeModel(TARGET_MODEL)
+            chat = model.start_chat(history=[])
 
-                # HTML anchor tag ile döndür
-                link_html = f"<a href='{link}' target='_blank' class='text-blue-600 underline'>{link}</a>"
-                enriched_response.append(f"🛍️ {product} - Marka: {brand} <br>🔗 {link_html}")
-            except Exception as e:
-                enriched_response.append(f"{line} <br>❌ Arama hatası: {e}")
+            full_prompt = (
+                f"Sen bir kişisel moda asistanısın. Kullanıcının aradığı kiyafetleri aşağıda göreceğin ürün listesi içinden önermek zorundasın. "
+                f"Liste dışına çıkamazsın. Uygun ürün olmasa bile en benzer 2-3 tanesini seç.\n\n"
+                f"📌 Ürün listesi:\n{product_text}\n\n"
+                f"👤 Kullanıcı mesajı: {message}\n"
+                f"👗 Stil: {style}, Favori Markalar: {favorite_brands}\n\n"
+                f"🔁 Lütfen aşağıdaki ürünleri önerirken sadece ürün adı ve markayı belirt. "
+                f"Açıklama, yorum, madde işareti, yıldız, kalın yazı veya emoji ekleme."
+            )
 
-        return "<br><br>".join(enriched_response)
+            logging.info(f"Oluşturulan prompt: {full_prompt}")
+            response = chat.send_message(full_prompt)
+            raw_lines = response.text.strip().split("\n")
 
-    except genai.types.BlockedPromptException as e:
-        logging.error(f"Prompt engellendi - {e}")
-        return "❗ AI isteğiniz güvenlik nedeniyle engellendi. Lütfen farklı bir şey deneyin."
-    except api_exceptions.NotFound as e:
-        logging.error(f"Model bulunamadı - {e}")
-        return "❗ Moda danışmanı modeli şu anda kullanılamıyor. Daha sonra tekrar deneyin."
-    except api_exceptions.GoogleAPICallError as e:
-        logging.error(f"API çağrı hatası - {e}")
-        return "❗ AI servisleriyle iletişim kurulamadı. Lütfen tekrar deneyin."
+            enriched_response = []
+            for line in raw_lines:
+                if not line.strip():
+                    continue
+                try:
+                    match = re.search(r"^(.*?)\s+([A-Z][a-z]+)$", line.strip())
+                    if not match:
+                        enriched_response.append(f"{line} <br>❌ Format tanınamadı.")
+                        continue
+
+                    product = match.group(1).strip()
+                    brand = match.group(2).strip()
+
+                    link = generate_brand_search_link(product, brand)
+                    link_html = f"<a href='{link}' target='_blank' class='text-blue-600 underline'>{link}</a>"
+                    enriched_response.append(f"🏍️ {product} - Marka: {brand} <br>🔗 {link_html}")
+                except Exception as e:
+                    enriched_response.append(f"{line} <br>❌ Arama hatası: {e}")
+
+            return "<br><br>".join(enriched_response)
+
+        elif response["type"] == "fallback_link":
+            fallback_url = response["url"]
+            return (
+                f"❗ Üzgünüm, veritabanımda bu ürünü bulamadım. "
+                f"Aşağıdaki bağlantıdan arayabilirsin:<br><br>"
+                f"<a href='{fallback_url}' target='_blank' class='text-blue-600 underline'>{fallback_url}</a>"
+            )
+        else:
+            return "❗ Beklenmeyen bir sonuç oluştu."
+
     except Exception as e:
-        logging.error(f"Genel hata: {e}", exc_info=True)
-        return f"❗ Bir hata oluştu: {str(e)}"
-
-
-def search_product_on_google(product, brand):
-    brand = brand.lower()
-    product_encoded = product.replace(" ", "+")  # URL uyumlu hale getir
-
-    brand_search_urls = {
-        "zara": f"https://www.zara.com/tr/tr/search?searchTerm={product_encoded}",
-        "bershka": f"https://www.bershka.com/tr/search?q={product_encoded}",
-        "mango": f"https://shop.mango.com/tr/kadin/arama?q={product_encoded}",
-        "stradivarius": f"https://www.stradivarius.com/tr/search?q={product_encoded}",
-        "pull and bear": f"https://www.pullandbear.com/tr/search?q={product_encoded}"
-    }
-
-    for key in brand_search_urls:
-        if key in brand:
-            return brand_search_urls[key]
-
-    # Eğer eşleşme yoksa Google araması öner:
-    return f"https://www.google.com/search?q={product_encoded}+{brand}"
-
+        logging.error(f"Hata: {e}", exc_info=True)
+        return "❗ Bir hata oluştu. Lütfen daha sonra tekrar deneyin."
 
 def generate_brand_search_link(product, brand):
     product_encoded = product.replace(" ", "+").lower()
@@ -126,5 +120,4 @@ def generate_brand_search_link(product, brand):
         if key in brand:
             return brand_links[key]
 
-    # Eşleşme bulunmazsa genel Google araması döndür
     return f"https://www.google.com/search?q={product_encoded}+{brand}"

@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "title": "Red Denim Jacket",
+    "brand": "Zara",
+    "description": "An oversized red denim jacket from Zara, perfect for casual winter outfits.",
+    "color": "Red",
+    "price": "899 TL",
+    "image_url": "https://example.com/images/red_denim_jacket.jpg"
+  },
+  {
+    "id": 2,
+    "title": "Beige Trench Coat",
+    "brand": "Zara",
+    "description": "Classic beige trench coat with a waist belt and double-breasted buttons.",
+    "color": "Beige",
+    "price": "1299 TL",
+    "image_url": "https://example.com/images/beige_trench_coat.jpg"
+  },
+  {
+    "id": 3,
+    "title": "Black Leather Pants",
+    "brand": "Zara",
+    "description": "High-waisted black faux leather pants with a slim fit.",
+    "color": "Black",
+    "price": "749 TL",
+    "image_url": "https://example.com/images/black_leather_pants.jpg"
+  },
+  {
+    "id": 4,
+    "title": "White Ribbed Crop Top",
+    "brand": "Zara",
+    "description": "A ribbed cotton crop top in white, perfect for summer days.",
+    "color": "White",
+    "price": "199 TL",
+    "image_url": "https://example.com/images/white_crop_top.jpg"
+  },
+  {
+    "id": 5,
+    "title": "Blue Mom Jeans",
+    "brand": "Zara",
+    "description": "Relaxed fit blue mom jeans with a vintage wash and ripped knees.",
+    "color": "Blue",
+    "price": "599 TL",
+    "image_url": "https://example.com/images/blue_mom_jeans.jpg"
+  },
+  {
+    "id": 6,
+    "title": "Black Oversized Hoodie",
+    "brand": "Bershka",
+    "description": "Oversized black hoodie with front pocket and adjustable drawstring hood.",
+    "color": "Black",
+    "price": "449 TL",
+    "image_url": "https://example.com/images/black_hoodie.jpg"
+  },
+  {
+    "id": 7,
+    "title": "Pink Knit Sweater",
+    "brand": "Bershka",
+    "description": "Soft pink knit sweater with balloon sleeves and a relaxed fit.",
+    "color": "Pink",
+    "price": "399 TL",
+    "image_url": "https://example.com/images/pink_sweater.jpg"
+  },
+  {
+    "id": 8,
+    "title": "Green Cargo Pants",
+    "brand": "Bershka",
+    "description": "Casual green cargo pants with multiple pockets and elastic hems.",
+    "color": "Green",
+    "price": "499 TL",
+    "image_url": "https://example.com/images/green_cargo_pants.jpg"
+  },
+  {
+    "id": 9,
+    "title": "Purple Graphic T-shirt",
+    "brand": "Bershka",
+    "description": "Purple cotton t-shirt with a retro-style printed graphic on the front.",
+    "color": "Purple",
+    "price": "299 TL",
+    "image_url": "https://example.com/images/purple_graphic_tshirt.jpg"
+  },
+  {
+    "id": 10,
+    "title": "White Tennis Skirt",
+    "brand": "Bershka",
+    "description": "Pleated white tennis skirt with side zipper and elastic waistband.",
+    "color": "White",
+    "price": "349 TL",
+    "image_url": "https://example.com/images/white_tennis_skirt.jpg"
+  }
+]

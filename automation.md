@@ -1,51 +1,30 @@
-✅ ModiApp Otomasyon ve Agent Mimarisine Genel Bakış
+# 🤖 Automation: Fallback Agent
 
-1️⃣ Otomasyon: Stok Takibi ve Bildirim Sistemi
+Bu ajan, kullanıcının kıyafetle ilgili yaptığı aramaları otomatik olarak vektör tabanlı sistem (FAISS) veya web arama yönlendirmesi arasında yönlendirir.
 
-Kullanıcılar uygulama üzerinden takip etmek istedikleri ürünün linkini ve bedenini seçerek sistemimize kaydediyor.  
-Sistem her 5 dakikada bir arka planda bu ürünlerin stok durumunu kontrol eder:
+## 🎯 Amaç
+Kullanıcı bir ürün istediğinde sistem:
+- Öncelikle FAISS vektör veritabanında eşleşen ürünleri arar.
+- Eğer yeterli eşleşme bulunamazsa, ilgili markanın (örneğin Zara, Bershka) arama sayfasına yönlendiren bir bağlantı oluşturur.
 
-- Eğer ürün hâlâ stokta değilse ➡️ hiçbir şey yapılmaz.
-- Eğer ürün stokta ise:
-  - 🔔 **Desktop notification** (plyer ile)
-  - 📧 **Email bildirimi** (SMTP ile) gönderilir.
+## ⚙️ Çalışma Mantığı
+1. Kullanıcının mesajı `fallback_agent.py` fonksiyonuna gönderilir.
+2. FAISS ile vektör arama yapılır.
+3. Eğer eşleşen ürün varsa → `type: "vector_result"` döner.
+4. Eğer eşleşme yoksa → `type: "fallback_link"` ve bir arama linki döner.
+5. `ai_chat.py` bu sonucu kontrol eder ve ya AI ile öneri üretir ya da doğrudan bağlantı gösterir.
 
-🛠 Kullanılan Teknolojiler
-- `BeautifulSoup`: Ürün sayfasından stok bilgisi kazımak için
-- `plyer`: Masaüstü bildirimi göndermek için
-- `smtplib`: Gmail üzerinden e-posta yollamak için
-- `schedule`: 5 dakikada bir otomatik kontrol için
+## 📁 Kullanılan Dosyalar
+- `features/search_products.py`
+- `features/web_search_tool.py`
+- `agents/fallback_agent.py`
+- `features/ai_chat.py` (entegre kullanım)
 
-🔁 Arka Plan Süreci (schedule_checker.py)
-```python
-from app.utils.schedule_checker import start_checker
+## 🧪 Test Etmek İçin
+Aşağıdaki gibi zorlayıcı cümleler yaz:
+- "Zara'dan mavi kürklü kapüşonlu mont istiyorum"
+- "Çiçekli mor gece elbisesi arıyorum"
+- "Oversize desenli yelek Bershka"
 
-start_checker()
+Eğer bu ürünler FAISS'te yoksa, sistem seni otomatik olarak Zara, Bershka veya Google'a yönlendirir.
 
-2️⃣ Agent Mimarisi: Akıllı Moda Asistanı
-ModiApp içinde çalışan agents/agent_main.py dosyası bir karar verici agent olarak görev yapar.
-
-🤖 Agent Karar Süreci
-Kullanıcının ürün isteği alınır (örn: "Siyah elbise var mı?")
-
-Aşağıdaki sırayla arama yapılır:
-
-🔍 Zara
-
-🔍 Bershka
-
-Eğer iki sitede de ürün bulunamazsa:
-
-💡 Gemini AI modeliyle benzer öneri sunulur
-
-📁 Dosya: agents/agent_main.py
--BeautifulSoup ile site taraması
--Gemini 1.5 Flash API ile fallback öneri üretimi
--Prompt mühendisliği ile stil önerisi
-
-👟 Kullanım
-python agents/agent_main.py
-
-📌 Ek Notlar
--.env dosyasında gerekli API anahtarları ve SMTP şifreleri gizli tutulmaktadır
--Otomasyon ve agent yapıları tamamen ayrı servislerde ama aynı uygulama içinde entegre çalışmaktadır
