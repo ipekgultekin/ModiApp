@@ -3,8 +3,8 @@
 from fastapi import APIRouter, Depends, Form, HTTPException, status
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
-from app import models, schemas
-from app.database import SessionLocal
+from backend.app import models, schemas
+from backend.app.database import SessionLocal
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta

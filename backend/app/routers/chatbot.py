@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request
-from features.ai_chat import handle_chat
+from backend.features.ai_chat import handle_chat
 import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.routers import auth, users, tracker, pages, chatbot, stock_logger  # ✅ Chatbot eklendi
+from backend.app.routers import auth, users, tracker, pages, chatbot, stock_logger  # ✅ Chatbot eklendi
 import threading
-from app.utils.schedule_checker import start_checker
+from backend.app.utils.schedule_checker import start_checker
 
 app = FastAPI()
 
@@ -24,6 +24,6 @@ app.include_router(pages.router)  # 👉 HTML sayfaları burada
 app.include_router(chatbot.router, prefix="/chat", tags=["Chatbot"])  # ✅ Chat endpoint
 app.include_router(stock_logger.router)
 # Statik dosyaları bağla
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 
 threading.Thread(target=start_checker, daemon=True).start()

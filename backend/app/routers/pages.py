@@ -2,10 +2,10 @@ from fastapi import APIRouter, Request, Depends, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from app.database import SessionLocal
-from app.models import StylePreference, User
+from backend.app.database import SessionLocal
+from backend.app.models import StylePreference, User
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="frontend/templates")
 router = APIRouter()
 
 # 🔌 DB bağlantısı

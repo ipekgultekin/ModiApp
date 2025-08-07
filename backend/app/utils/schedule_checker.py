@@ -1,7 +1,7 @@
 import time
 from sqlalchemy.orm import Session
-from app.database import SessionLocal
-from app.utils.notifier import run_stock_check
+from backend.app.database import SessionLocal
+from backend.app.utils.notifier import run_stock_check
 
 def start_checker():
     while True:

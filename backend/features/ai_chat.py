@@ -3,12 +3,12 @@ import os
 from dotenv import load_dotenv
 import logging
 from google.api_core import exceptions as api_exceptions
-from features.web_search_tool import get_fallback_search_link
-from agents.fallback_agent import fallback_agent
+from backend.features.web_search_tool import get_fallback_search_link
+from backend.agents.fallback_agent import fallback_agent
 import re
 
 # FAISS ürün arama modülü
-from features.search_products import search_similar_products
+from backend.features.search_products import search_similar_products
 
 # Logging ayarları
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

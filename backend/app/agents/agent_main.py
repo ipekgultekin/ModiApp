@@ -1,5 +1,5 @@
-# app/agents/agent_main.py
-from app.utils.ai_xhat import generate_brand_search_link
+# backend/app/agents/agent_main.py
+from backend.features.ai_chat import generate_brand_search_link
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv

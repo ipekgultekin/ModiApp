@@ -1,9 +1,9 @@
 # app/routers/tracker.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app import models, schemas
-from app.database import SessionLocal
-from app.routers.auth import get_current_user
+from backend.app import models, schemas
+from backend.app.database import SessionLocal
+from backend.app.routers.auth import get_current_user
 from typing import List
 
 router = APIRouter()

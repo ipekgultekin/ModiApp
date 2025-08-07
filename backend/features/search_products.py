@@ -9,8 +9,8 @@ from sentence_transformers import SentenceTransformer
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # FAISS indexi ve ürünleri yükle
-index = faiss.read_index("data/product_index.faiss")
-with open("data/product_id_map.json", "r", encoding="utf-8") as f:
+index = faiss.read_index("backend/data/product_index.faiss")
+with open("backend/data/product_id_map.json", "r", encoding="utf-8") as f:
     products = json.load(f)
 
 def search_similar_products(query, top_k=3):

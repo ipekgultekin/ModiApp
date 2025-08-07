@@ -1,7 +1,7 @@
 # agents/fallback_agent.py
 
-from features.search_products import search_similar_products
-from features.web_search_tool import get_fallback_search_link
+from backend.features.search_products import search_similar_products
+from backend.features.web_search_tool import get_fallback_search_link
 
 def fallback_agent(query: str):
     """

@@ -1,9 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
-from app import models
+from backend.app import models
 from sqlalchemy.orm import Session
 from plyer import notification
-from app.utils.email_sender import send_stock_email  # 📧 E-posta fonksiyonunu ekledik
+from backend.app.utils.email_sender import send_stock_email  # 📧 E-posta fonksiyonunu ekledik
 
 def check_stock_status(url: str) -> bool:
     try:
