@@ -72,3 +72,16 @@ Tarayıcıda şu adrese gidin:
 ```
 http://127.0.0.1:8000/mainpage
 ```
+## 📌 Gelişim Durumu (Capstone Aşamaları)
+### ✅ Tamamlananlar 
+✅ Gemini AI Entegrasyonu: Google Gemini API ile doğal dil girdilerine göre kıyafet önerisi alınıyor.
+✅ FAISS ile Vektör Arama (RAG): Kullanıcının mesajı ürün açıklamalarıyla eşleştirilerek en uygun ürünler AI’a veriliyor.
+✅ Arayüz Entegrasyonu: Chat mesajı gönderildiğinde AI’dan gelen cevaplar, tıklanabilir ürün bağlantılarıyla birlikte görselleştirilir.
+✅ Kapsamlı Prompt Mimarisi: AI sadece verilen ürün listesinden öneri yapacak şekilde yönlendirilir.
+✅ products.json: Ürün verisi (başlık, açıklama, renk, fiyat, görsel, marka) tutulan yapı tamamlandı.
+### 🔜 Yapılması Gerekenler (Eksik / Geliştirilecek)
+ Web Search Fallback Tool: Eğer FAISS’ten yeterli eşleşme bulunamazsa, AI’ın Zara veya Bershka gibi sitelerde arama yapabilmesi için web_search_tool fonksiyonu entegre edilecek.
+ agents/ Klasörü ve Otomasyon Açıklaması: automation.md ve agents/ altında otomatik bilgi getiren bir ajan mimarisi kurulacak.
+ Demo Videosu veya GIF: Kullanıcı etkileşimlerinin gösterildiği bir demo hazırlanmalı.
+ Notion Portfolyo Sayfası: Proje bilgilerini ve linkleri içeren bir sayfa hazırlanmalı.
+ README’ye Örnek Kullanım Ekranı veya GIF: Kullanıcı akışını gösteren bir ekran görüntüsü veya örnek cevaplar eklenmeli.
