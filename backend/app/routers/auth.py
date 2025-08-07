@@ -1,6 +1,6 @@
 # app/routers/auth.py
 
-from fastapi import APIRouter, Depends, Form, HTTPException, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse, RedirectResponse
 from backend.app import models, schemas
@@ -117,3 +117,14 @@ def login_page():
 @router.get("/profile", response_model=schemas.UserOut)
 def read_profile(current_user: models.User = Depends(get_current_user)):
     return current_user
+
+@router.post("/style-test")
+def submit_style_test(request: Request, db: Session = Depends(get_db)):
+    user_id = request.cookies.get("user_id")
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+
+    if user:
+        user.has_taken_style_test = True
+        db.commit()
+
+    return RedirectResponse(url="/mainpage", status_code=302)

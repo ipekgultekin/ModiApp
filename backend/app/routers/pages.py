@@ -132,3 +132,7 @@ def get_style_recommendations(user_style):
             "description": f"Konforlu ve şık {user_style} pantolonu"
         }
     ]
+    
+@router.get("/user_profile")
+def user_profile(request: Request):
+    return templates.TemplateResponse("user_profile.html", {"request": request})

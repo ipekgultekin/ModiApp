@@ -1,17 +1,19 @@
+
 # 👗 ModiApp – AI Destekli Moda Asistanı
 
-ModiApp, kullanıcıların kişisel stil tercihlerine ve favori markalarına göre kıyafet önerileri sunan yapay zeka destekli bir web uygulamasıdır.  
-Google Gemini AI ile entegre çalışır ve interaktif bir sohbet arayüzü sağlar.
+ModiApp, kullanıcıların kişisel stil tercihlerine ve favori markalarına göre kıyafet önerileri sunan, yapay zeka destekli bir web uygulamasıdır.  
+Google Gemini AI ile entegre çalışır ve kullanıcılarla gerçek zamanlı sohbet ederek kişiselleştirilmiş alışveriş deneyimi sağlar.
 
 ---
 
 ## 🚀 Özellikler
 
-- 🧠 Google Gemini AI ile doğal dil işleme
-- 👚 Kullanıcının stiline özel kıyafet önerileri
-- 💬 Gerçek zamanlı AI destekli sohbet arayüzü
-- 🔐 JWT ile kullanıcı kimlik doğrulama
-- 🌐 FastAPI + Jinja2 + TailwindCSS altyapısı
+- 🧠 **Google Gemini AI** ile doğal dil işleme
+- 🎯 **FAISS Vektör Arama** ile ürün açıklamaları üzerinden RAG
+- 👚 **Stil Testi & Kişiselleştirme** akışı
+- 💬 **Gerçek zamanlı chat arayüzü** ile ürün önerileri
+- 🔐 **JWT kimlik doğrulama**
+- 🌐 **FastAPI** backend + **Jinja2** frontend + **TailwindCSS** stil
 
 ---
 
@@ -48,16 +50,29 @@ pip install -r requirements.txt
 
 ## 🔐 Ortam Değişkenleri (.env)
 
-Proje dizinine `.env` adında bir dosya oluşturun ve içine şunları ekleyin:
+Proje dizinine `.env` adında bir dosya oluşturun:
 
-```
-GOOGLE_API_KEY=your_gemini_api_key
-SECRET_KEY=mysecretkey123
+```env
+# ✅ Gemini API Anahtarı (Sohbet motoru için)
+GOOGLE_API_KEY=YOUR_GEMINI_API_KEY
+
+# ✅ Google Search API Anahtarı ve Arama Motoru Kimliği (Fallback arama için)
+GOOGLE_SEARCH_API_KEY=YOUR_GOOGLE_SEARCH_API_KEY
+GOOGLE_CSE_ID=YOUR_GOOGLE_CSE_ID
+
+# ✅ Mail Gönderimi (Şifre sıfırlama, bildirimler vb.)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=YOUR_EMAIL_ADDRESS
+EMAIL_PASS=YOUR_APP_PASSWORD  # Gmail için uygulama şifresi olmalı
+
+# ✅ JWT Ayarları (Kimlik doğrulama için)
+SECRET_KEY=mysecretkey1234
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
 
-📌 Gemini API anahtarını [https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey) adresinden alabilirsiniz.
+➡️ [Gemini API anahtarı için tıkla](https://makersuite.google.com/app/apikey)
 
 ---
 
@@ -72,16 +87,47 @@ Tarayıcıda şu adrese gidin:
 ```
 http://127.0.0.1:8000/mainpage
 ```
-## 📌 Gelişim Durumu (Capstone Aşamaları)
-### ✅ Tamamlananlar 
--✅ Gemini AI Entegrasyonu: Google Gemini API ile doğal dil girdilerine göre kıyafet önerisi alınıyor.
--✅ FAISS ile Vektör Arama (RAG): Kullanıcının mesajı ürün açıklamalarıyla eşleştirilerek en uygun ürünler AI’a veriliyor.
--✅ Arayüz Entegrasyonu: Chat mesajı gönderildiğinde AI’dan gelen cevaplar, tıklanabilir ürün bağlantılarıyla birlikte görselleştirilir.
--✅ Kapsamlı Prompt Mimarisi: AI sadece verilen ürün listesinden öneri yapacak şekilde yönlendirilir.
--✅ products.json: Ürün verisi (başlık, açıklama, renk, fiyat, görsel, marka) tutulan yapı tamamlandı.
-### 🔜 Yapılması Gerekenler (Eksik / Geliştirilecek)
- -Web Search Fallback Tool: Eğer FAISS’ten yeterli eşleşme bulunamazsa, AI’ın Zara veya Bershka gibi sitelerde arama yapabilmesi için web_search_tool fonksiyonu entegre edilecek.
- -agents/ Klasörü ve Otomasyon Açıklaması: automation.md ve agents/ altında otomatik bilgi getiren bir ajan mimarisi kurulacak.
- -Demo Videosu veya GIF: Kullanıcı etkileşimlerinin gösterildiği bir demo hazırlanmalı.
- -Notion Portfolyo Sayfası: Proje bilgilerini ve linkleri içeren bir sayfa hazırlanmalı.
- -README’ye Örnek Kullanım Ekranı veya GIF: Kullanıcı akışını gösteren bir ekran görüntüsü veya örnek cevaplar eklenmeli.
+
+---
+
+## 📌 Capstone Proje Aşamaları
+
+### ✅ Tamamlananlar
+
+- ✅ **Fikir & Kullanıcı Akışı**: Moda sektöründe “stokta bulunamayan ürün” problemini çözmek için AI destekli öneri sistemi tasarlandı.
+- ✅ **Gemini AI Entegrasyonu**: Kullanıcının mesajına göre ilgili ürünler öneriliyor.
+- ✅ **FAISS & RAG**: products.json üzerinden ürün açıklamaları vektörlenip FAISS veritabanında aranıyor.
+- ✅ **Arayüz Entegrasyonu**: Chat mesajları tıklanabilir bağlantılarla destekleniyor.
+- ✅ **Prompt Mimarisi**: AI sadece veri kümesinden öneri yapacak şekilde yönlendirildi.
+- ✅ **products.json**: Ürün adı, açıklama, renk, fiyat, marka ve görsel içeren yapı oluşturuldu.
+- ✅ **Agent Mimarisi (LangChain)**: Web araması yapamayan durumlarda alternatif öneri getirebilen ajan sistemi oluşturuldu.
+
+---
+
+### 🔧 Geliştirme Aşamasında (Yapılacaklar)
+
+- 📹 **Demo Videosu veya GIF**  
+  Uygulama kullanımını gösteren kısa bir tanıtım demosu hazırlanacak.
+
+- 🧾 **Notion Portfolyo Sayfası**  
+  Projeye dair tüm adımların ve görsellerin yer aldığı bir tanıtım sayfası oluşturulacak.
+
+- 📷 **README’ye Ekran Görüntüsü / GIF**  
+  Uygulamanın chat arayüzü, stil testi ve AI cevabı örneği görsellerle desteklenecek.
+
+---
+
+## 🧠 Kullanılan Teknolojiler
+
+| Katman     | Teknoloji                          |
+|------------|-------------------------------------|
+| Backend    | FastAPI, Python, SQLAlchemy         |
+| Frontend   | HTML, TailwindCSS, Jinja2, JS       |
+| AI         | Gemini Pro (Google), FAISS (RAG)    |
+| Auth       | JWT                                 |
+| Veritabanı | SQLite                              |
+| Agent      | LangChain                           |
+| Deployment | Lokal (uvicorn)                     |
+
+---
+

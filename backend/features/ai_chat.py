@@ -1,3 +1,4 @@
+
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
@@ -6,9 +7,7 @@ from google.api_core import exceptions as api_exceptions
 from backend.features.web_search_tool import get_fallback_search_link
 from backend.agents.fallback_agent import fallback_agent
 import re
-
-# FAISS ürün arama modülü
-from backend.features.search_products import search_similar_products
+import json
 
 # Logging ayarları
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -40,65 +39,77 @@ except Exception as e:
     logging.error(f"Model yapılandırma hatası: {e}")
     raise Exception(f"AI servisleri başlatılamıyor: {e}")
 
+def get_relevant_products(user_message, products_json_path="backend/app/products.json", limit=5):
+    with open(products_json_path, "r", encoding="utf-8") as f:
+        products = json.load(f)
+
+    keywords = user_message.lower().split()
+    scored = []
+
+    for product in products:
+        score = sum(1 for kw in keywords if kw in product['description'].lower() or kw in product['title'].lower())
+        if score > 0:
+            scored.append((score, product))
+
+    scored.sort(reverse=True, key=lambda x: x[0])
+    return [item[1] for item in scored[:limit]]
+
 def handle_chat(message: str, style: str = "casual", favorite_brands: str = "Zara, Bershka") -> str:
     try:
-        response = fallback_agent(message)
-
-        if response["type"] == "vector_result":
-            similar_products = response["data"]
-
-            product_text = "\n".join([
-                f"- {p['title']} ({p['brand']}) – {p['price']}: {p['description']}"
-                for p in similar_products
-            ])
-
-            model = genai.GenerativeModel(TARGET_MODEL)
-            chat = model.start_chat(history=[])
-
-            full_prompt = (
-                f"Sen bir kişisel moda asistanısın. Kullanıcının aradığı kiyafetleri aşağıda göreceğin ürün listesi içinden önermek zorundasın. "
-                f"Liste dışına çıkamazsın. Uygun ürün olmasa bile en benzer 2-3 tanesini seç.\n\n"
-                f"📌 Ürün listesi:\n{product_text}\n\n"
-                f"👤 Kullanıcı mesajı: {message}\n"
-                f"👗 Stil: {style}, Favori Markalar: {favorite_brands}\n\n"
-                f"🔁 Lütfen aşağıdaki ürünleri önerirken sadece ürün adı ve markayı belirt. "
-                f"Açıklama, yorum, madde işareti, yıldız, kalın yazı veya emoji ekleme."
-            )
-
-            logging.info(f"Oluşturulan prompt: {full_prompt}")
-            response = chat.send_message(full_prompt)
-            raw_lines = response.text.strip().split("\n")
-
-            enriched_response = []
-            for line in raw_lines:
-                if not line.strip():
-                    continue
-                try:
-                    match = re.search(r"^(.*?)\s+([A-Z][a-z]+)$", line.strip())
-                    if not match:
-                        enriched_response.append(f"{line} <br>❌ Format tanınamadı.")
-                        continue
-
-                    product = match.group(1).strip()
-                    brand = match.group(2).strip()
-
-                    link = generate_brand_search_link(product, brand)
-                    link_html = f"<a href='{link}' target='_blank' class='text-blue-600 underline'>{link}</a>"
-                    enriched_response.append(f"🏍️ {product} - Marka: {brand} <br>🔗 {link_html}")
-                except Exception as e:
-                    enriched_response.append(f"{line} <br>❌ Arama hatası: {e}")
-
-            return "<br><br>".join(enriched_response)
-
-        elif response["type"] == "fallback_link":
-            fallback_url = response["url"]
+        relevant_products = get_relevant_products(message)
+        if not relevant_products:
+            fallback_url = get_fallback_search_link(message)
             return (
                 f"❗ Üzgünüm, veritabanımda bu ürünü bulamadım. "
                 f"Aşağıdaki bağlantıdan arayabilirsin:<br><br>"
                 f"<a href='{fallback_url}' target='_blank' class='text-blue-600 underline'>{fallback_url}</a>"
             )
-        else:
-            return "❗ Beklenmeyen bir sonuç oluştu."
+
+        product_text = "\n".join([
+            f"- {p['title']} ({p['brand']}) – {p['price']} TL: {p['description']}"
+            for p in relevant_products
+        ])
+
+        model = genai.GenerativeModel(TARGET_MODEL)
+        chat = model.start_chat(history=[])
+
+        full_prompt = (
+            f"Sen bir kişisel moda asistanısın. Kullanıcının aradığı kiyafetleri aşağıda göreceğin ürün listesi içinden önermek zorundasın. "
+            f"Liste dışına çıkamazsın. Uygun ürün olmasa bile en benzer 2-3 tanesini seç.\n\n"
+            f"📌 Ürün listesi:\n{product_text}\n\n"
+            f"👤 Kullanıcı mesajı: {message}\n"
+            f"👗 Stil: {style}, Favori Markalar: {favorite_brands}\n\n"
+            f"🔁 Lütfen aşağıdaki ürünleri önerirken sadece ürün adı ve markayı belirt. "
+            f"Açıklama, yorum, madde işareti, yıldız, kalın yazı veya emoji ekleme.\n"
+            f"⛔ Yalnızca ürün adı ve markayı yaz. Şunları ASLA yazma: açıklama, maalesef, öneriyorum, cümle, <br>, ⭐, 🎯, emoji, yorum.\n"
+            f"✅ Sadece bu şekilde cevap ver: Ürün Adı Marka\n"
+            f"Örnek: Red Denim Jacket Zara"
+        )
+
+        logging.info(f"Oluşturulan prompt: {full_prompt}")
+        response = chat.send_message(full_prompt)
+        raw_lines = response.text.strip().split("\n")
+
+        enriched_response = []
+        for line in raw_lines:
+            if not line.strip():
+                continue
+            try:
+                match = re.search(r"^(.*?)\s+([A-Z][a-z]+)$", line.strip())
+                if not match:
+                    enriched_response.append(f"{line} <br>❌ Format tanınamadı.")
+                    continue
+
+                product = match.group(1).strip()
+                brand = match.group(2).strip()
+
+                link = generate_brand_search_link(product, brand)
+                link_html = f"<a href='{link}' target='_blank' class='text-blue-600 underline'>{link}</a>"
+                enriched_response.append(f"🏍️ {product} - Marka: {brand} <br>🔗 {link_html}")
+            except Exception as e:
+                enriched_response.append(f"{line} <br>❌ Arama hatası: {e}")
+
+        return "<br><br>".join(enriched_response)
 
     except Exception as e:
         logging.error(f"Hata: {e}", exc_info=True)
