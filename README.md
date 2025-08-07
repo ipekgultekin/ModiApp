@@ -22,7 +22,7 @@ Google Gemini AI ile entegre çalışır ve kullanıcılarla gerçek zamanlı so
 ### 1️⃣ Projeyi Klonla
 
 ```bash
-git clone https://github.com/kullaniciadi/modiapp.git
+git clone https://github.com/ipekgultekin/ModiApp
 cd modiapp
 ```
 
