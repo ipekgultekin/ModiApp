@@ -16,4 +16,4 @@ beautifulsoup4
 player
 faiss-cpu
 sentence-transformers
-
+plyer

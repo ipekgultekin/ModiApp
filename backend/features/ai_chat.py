@@ -8,6 +8,7 @@ from backend.features.web_search_tool import get_fallback_search_link
 from backend.agents.fallback_agent import fallback_agent
 import re
 import json
+from pathlib import Path
 
 # Logging ayarları
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -39,17 +40,25 @@ except Exception as e:
     logging.error(f"Model yapılandırma hatası: {e}")
     raise Exception(f"AI servisleri başlatılamıyor: {e}")
 
-def get_relevant_products(user_message, products_json_path="backend/app/products.json", limit=5):
-    with open(products_json_path, "r", encoding="utf-8") as f:
+def get_relevant_products(user_message, limit=5):
+    # backend/ dizinine git → data/products.json'u aç
+    data_path = Path(__file__).resolve().parents[1] / "data" / "products.json"
+    print(f"[DEBUG] products.json path: {data_path}")
+
+    if not data_path.exists() or data_path.stat().st_size == 0:
+        # Dosya yoksa veya boşsa güvenli dönüş
+        return []
+
+    with data_path.open("r", encoding="utf-8-sig") as f:
         products = json.load(f)
 
     keywords = user_message.lower().split()
     scored = []
-
-    for product in products:
-        score = sum(1 for kw in keywords if kw in product['description'].lower() or kw in product['title'].lower())
+    for p in products:
+        text = (p.get("description","") + " " + p.get("title","")).lower()
+        score = sum(1 for kw in keywords if kw in text)
         if score > 0:
-            scored.append((score, product))
+            scored.append((score, p))
 
     scored.sort(reverse=True, key=lambda x: x[0])
     return [item[1] for item in scored[:limit]]
